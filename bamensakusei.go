@@ -11,8 +11,20 @@ const (
 )
 
 type Game struct {
-	board  [][]int
+	var board = [Size][Size]int{
+		{0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0},
+		{0,0,0,2,1,0,0,0},
+		{0,0,0,1,2,0,0,0},	
+		{0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0},
+	}
 	player int
+}
+func main(){
+	
 }
 func (g *Game) PrintBoard() {
 	fmt.Println("  1 2 3 4 5 6 7 8")
