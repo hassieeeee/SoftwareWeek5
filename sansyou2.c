@@ -11,6 +11,7 @@ int main(){
 	{0,0,0,0,0,0,0,0}
     };
     int x,y,n=0,i,j,m,h,k,pn;
+    
     printf("  1 2 3 4 5 6 7 8 x\n");
     for(i=0;i<8;i++){
 	printf("%d|",i+1);
@@ -29,8 +30,11 @@ int main(){
     printf("1pは○、2pは●です\n");
     printf("x=0,y=0で次の人にパスできます。\n");
     printf("x=11,y=11でゲームを終了できます。\n");
-    for(;;n++){
+    
+for(;;n++){
+    	
 	pn=n%2+1;
+	
 	for(;;){
 	    printf("player %d\n",pn);
 	    printf("x = ");
@@ -50,6 +54,7 @@ int main(){
 	m=1;/*相手の駒をひっくり返したかどうか判定*/
 	if(x== 10 && y== 10){
 	    break;}
+
 /*上*/
 	for(j=y-1;j>=0;j--){
 	    if(field[x][j]==0){
@@ -169,7 +174,7 @@ int main(){
 	    printf("不正な位置です。もう一度入力してください。\n");
 	}
 /*表示*/
-	printf("  1 2 3 4 5 6 7 8 x\n ");
+	printf(" 1 2 3 4 5 6 7 8 x\n");
 	for(i=0;i<8;i++){
 	    printf("%d|",i+1);
 	    for(j=0;j<8;j++){
@@ -193,7 +198,7 @@ int main(){
 	}
 	if(c==0){
 	    break;}
-    }
+}
     int pa=0,pb=0;
     for(i=0;i<=7;i++){
 	for(j=0;j<=7;j++){
