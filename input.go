@@ -6,21 +6,21 @@ import (
 	"strconv"
 )
 
-func main() {
-	// 	for i := 0; ; i++{
-	//      if i%2 == 0 {
-	//         input()[0]
-	//      }
-	//      else{
-	//          input()[1]
-	//      }
-	// 	}
-	var zahyoint [2]int = input()
-	_ = zahyoint
-	fmt.Println(zahyoint[0])
-	fmt.Println(zahyoint[1])
+// func main() {
+// 	// 	for i := 0; ; i++{
+// 	//      if i%2 == 0 {
+// 	//         input()[0]
+// 	//      }
+// 	//      else{
+// 	//          input()[1]
+// 	//      }
+// 	// 	}
+// 	var zahyoint [2]int = input()
+// 	_ = zahyoint
+// 	fmt.Println(zahyoint[0])
+// 	fmt.Println(zahyoint[1])
 
-}
+// }
 
 // 座標を入力し、x座標、y座標を戻り値
 func input() [2]int {
