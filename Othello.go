@@ -23,29 +23,88 @@ func main() {
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
 	}
-	PrintBoard(board)
 
 	player := Black
+	skip := 0
 
 	for {
-		if player == Black {
-			fmt.Println("player: ● please input x,y")
+		fmt.Println("Please select a mode. vsCPU: c vsPlayer: p")
+		var mode string
+		fmt.Scanln(&mode)
+		if mode == "c" { //CPU対戦
+			for {
+				board = marking(board, player)
+				PrintBoard(board)
+				if skipjudge(board) == false { //おける場所が無かったらplayerを変更してスキップ
+					skip = skip + 1
+					player = player%2 + 1
+					fmt.Println("skip!")
+					if skip == 2 {
+						break //両方連続でスキップしたら置く場所が無いのでゲーム終了して勝敗判定へ
+					}
+				} else {
+					skip = 0
+					board = deletemark(board)
+					if player == Black {
+						fmt.Println("player: ● please input x,y")
+					} else {
+						fmt.Println("player: ○ please input x,y")
+					}
+					var zahyoint [2]int
+					if player == Black {
+						zahyoint = input()
+					} else if player == White {
+						zahyoint = cpu(board, player)
+					}
+					var okeru bool = okeru_okenai(zahyoint[0], zahyoint[1], board, player)
+					if okeru == true {
+						board = komahaitti(zahyoint[0], zahyoint[1], board, player)
+						board = hasamu(zahyoint[0], zahyoint[1], board, player)
+						player = player%2 + 1
+					} else {
+						println("Cannot place. Please try again.")
+					}
+				}
+			}
+			kazueru(board) //勝敗を判断
+			break
+
+		} else if mode == "p" { //2P対戦
+			for {
+				board = marking(board, player)
+				PrintBoard(board)
+				if skipjudge(board) == false { //おける場所が無かったらplayerを変更してスキップ
+					skip = skip + 1
+					player = player%2 + 1
+					if skip == 2 {
+						break //両方連続でスキップしたら置く場所が無いのでゲーム終了して勝敗判定へ
+					}
+				} else {
+					skip = 0
+					board = deletemark(board)
+					if player == Black {
+						fmt.Println("player: ● please input x,y")
+					} else {
+						fmt.Println("player: ○ please input x,y")
+					}
+					var zahyoint [2]int = input()
+					var okeru bool = okeru_okenai(zahyoint[0], zahyoint[1], board, player)
+					if okeru == true {
+						board = komahaitti(zahyoint[0], zahyoint[1], board, player)
+						board = hasamu(zahyoint[0], zahyoint[1], board, player)
+						player = player%2 + 1
+					} else {
+						println("Cannot place. Please try again.")
+					}
+				}
+			}
+			kazueru(board) //勝敗を判断
+			break
 		} else {
-			fmt.Println("player: ○ please input x,y")
-		}
-		var zahyoint [2]int = input()
-		var okeru bool = okeru_okenai(zahyoint[0], zahyoint[1], board, player)
-		if okeru == true {
-			board = komahaitti(zahyoint[0], zahyoint[1], board, player)
-			board = hasamu(zahyoint[0], zahyoint[1], board, player)
-			PrintBoard(board)
-			player = player%2 + 1
-		} else {
-			PrintBoard(board)
-			println("Cannot place. Please try again.")
+			fmt.Println("Invalid input.")
 		}
 	}
-	//勝敗を判断
+
 }
 
 //座標を入力し、x座標、y座標を戻り値
@@ -65,6 +124,7 @@ func input() [2]int {
 	return zahyoint
 }
 
+//現在の盤面を返す
 func PrintBoard(board [8][8]int) {
 	fmt.Println("  1 2 3 4 5 6 7 8")
 	for i := 0; i < Size; i++ {
@@ -75,6 +135,8 @@ func PrintBoard(board [8][8]int) {
 				fmt.Print("● ")
 			case White:
 				fmt.Print("○ ")
+			case 3:
+				fmt.Print("x ")
 			default:
 				fmt.Print(". ")
 			}
@@ -83,6 +145,54 @@ func PrintBoard(board [8][8]int) {
 	}
 }
 
+//おける座標にマークをつけて盤面を返す
+func marking(board [8][8]int, player int) [8][8]int {
+	for x := 0; x <= 7; x++ {
+		for y := 0; y <= 7; y++ {
+			if board[y][x] == 0 {
+				if Top(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if TopRight(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if Right(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if BottomRight(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if Bottom(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if BottomLeft(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if Left(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+				if TopLeft(x, y, board, player) == true {
+					board[y][x] = 3
+				}
+			}
+		}
+	}
+	return board
+}
+
+//マークを消した盤面を返す
+func deletemark(board [8][8]int) [8][8]int {
+	for x := 0; x <= 7; x++ {
+		for y := 0; y <= 7; y++ {
+			if board[y][x] == 3 {
+				board[y][x] = 0
+			}
+		}
+	}
+	return board
+}
+
+//指定した座標におけるかどうかをbool型で返す
 func okeru_okenai(x int, y int, board [8][8]int, player int) bool {
 	if board[y][x] != 0 {
 		return false
@@ -383,4 +493,89 @@ func TopLeft(x int, y int, board [8][8]int, player int) bool {
 func komahaitti(x int, y int, board [8][8]int, player int) [8][8]int {
 	board[y][x] = player
 	return board
+}
+
+func kazueru(board [8][8]int) {
+	var black int
+	var white int
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			if board[i][j] == 1 {
+				black++
+			} else if board[i][j] == 2 {
+				white++
+			}
+		}
+	}
+	if black > white {
+		fmt.Print("black win")
+	} else if black < white {
+		fmt.Print("white win")
+	} else {
+		fmt.Print("draw")
+	}
+}
+
+func skipjudge(board [8][8]int) bool {
+	for x := 0; x <= 7; x++ {
+		for y := 0; y <= 7; y++ {
+			if board[y][x] == 3 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func cpu(board [8][8]int, player int) [2]int {
+	var zahyoint [2]int
+	for j := 0; j <= 2; j++ { //角のループ
+		if okeru_okenai(j, j, board, player) == true {
+			zahyoint[0] = j
+			zahyoint[1] = j
+			return zahyoint
+		} else if okeru_okenai(j, 7-j, board, player) == true {
+			zahyoint[0] = j
+			zahyoint[1] = 7 - j
+			return zahyoint
+		} else if okeru_okenai(7-j, j, board, player) == true {
+			zahyoint[0] = 7 - j
+			zahyoint[1] = j
+			return zahyoint
+		} else if okeru_okenai(7-j, 7-j, board, player) == true {
+			zahyoint[0] = 7 - j
+			zahyoint[1] = 7 - j
+			return zahyoint
+		} else {
+			for i := j; i <= 7-j; i++ { //端のループ
+				if okeru_okenai(i, j, board, player) == true {
+					zahyoint[0] = i
+					zahyoint[1] = j
+					return zahyoint
+				}
+			}
+			for i := j; i <= 7-j; i++ {
+				if okeru_okenai(j, i, board, player) == true {
+					zahyoint[0] = j
+					zahyoint[1] = i
+					return zahyoint
+				}
+			}
+			for i := j; i <= 7-j; i++ {
+				if okeru_okenai(7-j, i, board, player) == true {
+					zahyoint[0] = 7 - j
+					zahyoint[1] = i
+					return zahyoint
+				}
+			}
+			for i := j; i <= 7-j; i++ {
+				if okeru_okenai(7-j, i, board, player) == true {
+					zahyoint[0] = 7 - j
+					zahyoint[1] = i
+					return zahyoint
+				}
+			}
+		}
+	}
+	return zahyoint
 }
